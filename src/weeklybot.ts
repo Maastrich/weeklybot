@@ -31,8 +31,16 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
     .slice(0, 2);
   if (randomUsers) {
     await respond({
-      text: `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`,
-      replace_original: false,
+      blocks: [{
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`
+        },
+      },
+        action,
+      ],
+      replace_original: true,
     });
     // post a message to the channel
   } else {
