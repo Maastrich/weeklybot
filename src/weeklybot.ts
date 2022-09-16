@@ -9,12 +9,14 @@ const app = new App({
   logLevel: LogLevel.INFO,
 });
 
-app.command("/weekly", async ({ command, ack, say }) => {
-  // Acknowledge command request
+app.action("weekly", async ({ action, ack, say, body, respond }) => {
   await ack();
 
-  const channelId = command.channel_id;
+  const channelId = body.channel?.id;
 
+  if (!channelId) {
+    return;
+  }
   // list of users in the channel
   const users = await app.client.conversations.members({
     channel: channelId
@@ -24,17 +26,42 @@ app.command("/weekly", async ({ command, ack, say }) => {
     ?.sort(() => 0.5 - Math.random())
     .slice(0, 2);
   if (randomUsers) {
-    await say(
+    await respond(
       `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`
     );
     // post a message to the channel
-    await app.client.chat.postMessage({
-      channel: channelId,
-      text: "/weekly"
-    });
   } else {
     await say("Could not find any users in this channel :man_shrugging:\nTry with <https://random.org|random.org>");
   }
+})
+
+app.command("/weekly", async ({ command, ack, say }) => {
+  // Acknowledge command request
+  await ack();
+  await say({
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: "Hello! It's monday, time to pick your scribe and ambassador for the week :tada:",
+        }
+      },
+      {
+        type: "actions",
+        elements: [
+          {
+            type: "button",
+            text: {
+              type: "plain_text",
+              text: "Pick my scribe and ambassador",
+            },
+            action_id: "weekly",
+          }
+        ]
+      }
+    ]
+  })
 });
 
 app.error(async (error: CodedError): Promise<void> => {
