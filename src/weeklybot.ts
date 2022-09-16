@@ -81,7 +81,6 @@ app.command("/weekly", async ({ command, ack, say }) => {
   }
   // send weekly message every monday at 9:30am CET
   await app.client.chat.scheduleMessage({
-    token: process.env.SLACK_BOT_TOKEN,
     channel: command.channel_id,
     post_at: new Date().setHours(9, 30, 0, 0),
     text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
@@ -124,7 +123,7 @@ app.command("/weekly-status", async ({ command, ack, say }) => {
     latest: 2147483647
   });
 
-  if (scheduled_messages) {
+  if (scheduled_messages?.length) {
     await say("I'm still posting the message every monday at 9:30am CET :tada:");
   } else {
     await say("I'm not posting the message anymore :cry:");
