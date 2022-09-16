@@ -15,7 +15,10 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
   const channelId = body.channel?.id;
 
   if (!channelId) {
-    return;
+    return respond({
+      text: "Sorry, I couldn't find the channel ID for this message.",
+      replace_original: true,
+    });
   }
   // list of users in the channel
   const users = await app.client.conversations.members({
@@ -26,9 +29,10 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
     ?.sort(() => 0.5 - Math.random())
     .slice(0, 2);
   if (randomUsers) {
-    await respond(
-      `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`
-    );
+    await respond({
+      text: `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`,
+      replace_original: false,
+    });
     // post a message to the channel
   } else {
     await say("Could not find any users in this channel :man_shrugging:\nTry with <https://random.org|random.org>");
