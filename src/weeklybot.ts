@@ -27,6 +27,11 @@ app.command("/weekly", async ({ command, ack, say }) => {
     await say(
       `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`
     );
+    // post a message to the channel
+    await app.client.chat.postMessage({
+      channel: channelId,
+      text: "/weekly"
+    });
   } else {
     await say("Could not find any users in this channel :man_shrugging:\nTry with <https://random.org|random.org>");
   }

@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "prestart": "npm run build",
     "start": "node dist/weeklybot.js",
     "prebuild": "rm -rf dist",
     "build": "tsc --build"
