@@ -114,7 +114,7 @@ app.command("/weekly-off", async ({ command, ack, say }) => {
   await ack();
   // get scheduled messages
   const { scheduled_messages } = await app.client.chat.scheduledMessages.list({
-    oldest: Date.now(),
+    oldest: Date.now() / 1000,
     channel: command.channel_id,
     // end of time
     latest: 2147483647
@@ -137,9 +137,9 @@ app.command("/weekly-status", async ({ command, ack, say }) => {
   await ack();
   // get scheduled messages
   const { scheduled_messages } = await app.client.chat.scheduledMessages.list({
-    oldest: Date.now(),
+    oldest: Date.now() / 1000,
     channel: command.channel_id,
-    // end of time
+    // end of time in unix time ms
     latest: 2147483647
   });
 
