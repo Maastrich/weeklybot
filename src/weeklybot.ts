@@ -82,7 +82,8 @@ app.command("/weekly", async ({ command, ack, say }) => {
   // send weekly message every monday at 9:30am CET
   await app.client.chat.scheduleMessage({
     channel: command.channel_id,
-    post_at: new Date().setHours(9, 30, 0, 0),
+    // next monday at 9:30am CET
+    post_at: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (1 + 7 - new Date().getDay()) % 7 + 1000 * 60 * 60 * 9 + 1000 * 60 * 30).getTime() / 1000,
     text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
     blocks: weeklyMessage.blocks
   });
