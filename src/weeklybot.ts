@@ -1,11 +1,12 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import { App, } from "@slack/bolt"
+import { App, LogLevel, } from "@slack/bolt"
 
 import dotenv from "dotenv"
 dotenv.config()
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+  logLevel: LogLevel.DEBUG,
 });
 
 function getNextMondayMorning() {
@@ -75,7 +76,7 @@ app.action("weekly", async ({ ack, say, body, respond }) => {
   }
 })
 
-app.command("/weekly", async ({ command, ack, say }) => {
+app.command("/weekly", async ({ command, ack, say, logger }) => {
   // Acknowledge command request
   await ack();
   const weeklyMessage = {
@@ -95,11 +96,13 @@ app.command("/weekly", async ({ command, ack, say }) => {
       }
     ]
   }
+  const nextMonday = getNextMondayMorning();
+  logger.debug(`Next monday is ${nextMonday}`);
   // send weekly message every monday at 9:30am CET
   await app.client.chat.scheduleMessage({
     channel: command.channel_id,
     // next monday at 9:30am CET
-    post_at: getNextMondayMorning().getTime(),
+    post_at: nextMonday.getTime() / 1000,
     text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
     blocks: weeklyMessage.blocks
   });
