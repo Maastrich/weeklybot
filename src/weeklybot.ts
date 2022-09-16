@@ -1,5 +1,5 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import { App, LogLevel, } from "@slack/bolt"
+import { App, Logger, LogLevel, } from "@slack/bolt"
 
 import dotenv from "dotenv"
 dotenv.config()
@@ -9,20 +9,27 @@ const app = new App({
   logLevel: LogLevel.DEBUG,
 });
 
-function getNextMondayMorning() {
-  const date = new Date()
-  const dateCopy = new Date(date.getTime());
+function getNextMondayMorning(logger: Logger) {
+  const nowParis = new Date(new Date().toLocaleString("en-US", { timeZone: "Europe/Paris" }));
+  // Get the current date in Europe/Paris timezone
+  const now = new Date();
+  const currentDay = now.getDay();
+  const currentHour = now.getHours();
+  // Get the next Monday morning
+  const nextMondayMorning = new Date();
+  nextMondayMorning.setDate(now.getDate() + (8 - currentDay) % 7);
+  nextMondayMorning.setHours(9 + nowParis.getTimezoneOffset());
+  nextMondayMorning.setMinutes(0);
+  nextMondayMorning.setSeconds(0);
+  nextMondayMorning.setMilliseconds(0);
+  // If it's already Monday morning, add 7 days
+  if (currentDay === 1 && currentHour >= 9) {
+    nextMondayMorning.setDate(nextMondayMorning.getDate() + 7);
+  }
 
-  const nextMonday = new Date(
-    dateCopy.setDate(
-      dateCopy.getDate() + ((7 - dateCopy.getDay() + 1) % 7 || 7),
-    ),
-  );
-  nextMonday.setHours(9);
-  nextMonday.setMinutes(30);
-  nextMonday.setSeconds(0);
-  nextMonday.setMilliseconds(0);
-  return nextMonday;
+  logger.info(`Next Monday morning is ${nextMondayMorning} ofset is ${nowParis.getTimezoneOffset()}`);
+  // Return the date in unix timestamp
+  return nextMondayMorning.getTime() / 1000;
 }
 
 app.action("weekly", async ({ ack, say, body, respond }) => {
@@ -96,13 +103,13 @@ app.command("/weekly", async ({ command, ack, say, logger }) => {
       }
     ]
   }
-  const nextMonday = getNextMondayMorning();
+  const nextMonday = getNextMondayMorning(logger);
   logger.debug(`Next monday is ${nextMonday}`);
   // send weekly message every monday at 9:30am CET
   await app.client.chat.scheduleMessage({
     channel: command.channel_id,
     // next monday at 9:30am CET
-    post_at: nextMonday.getTime() / 1000,
+    post_at: nextMonday,
     text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
     blocks: weeklyMessage.blocks
   });
