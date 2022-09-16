@@ -1,10 +1,12 @@
 // Require the Node Slack SDK package (github.com/slackapi/node-slack-sdk)
-import { App } from "@slack/bolt"
+import { App, CodedError, LogLevel } from "@slack/bolt"
 
-
+import dotenv from "dotenv"
+dotenv.config()
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
-  signingSecret: process.env.SLACK_SIGNING_SECRET
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  logLevel: LogLevel.INFO,
 });
 
 app.command("/weekly", async ({ command, ack, say }) => {
@@ -30,7 +32,16 @@ app.command("/weekly", async ({ command, ack, say }) => {
   }
 });
 
+app.error(async (error: CodedError): Promise<void> => {
+  // Check the details of the error to handle cases where you should retry sending a message or stop the app
+  console.error(error);
+  return;
+});
+
+
 (async () => {
-  app.start(process.env.PORT || 3000);
+  (await app.start(process.env.PORT || 3000)).addListener("request", () => {
+    console.log("request")
+  });
   console.log("⚡️ Bolt app is running!");
 })();
