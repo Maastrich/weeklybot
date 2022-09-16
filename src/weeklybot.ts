@@ -8,6 +8,22 @@ const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
 });
 
+function getNextMondayMorning() {
+  const date = new Date()
+  const dateCopy = new Date(date.getTime());
+
+  const nextMonday = new Date(
+    dateCopy.setDate(
+      dateCopy.getDate() + ((7 - dateCopy.getDay() + 1) % 7 || 7),
+    ),
+  );
+  nextMonday.setHours(9);
+  nextMonday.setMinutes(30);
+  nextMonday.setSeconds(0);
+  nextMonday.setMilliseconds(0);
+  return nextMonday;
+}
+
 app.action("weekly", async ({ ack, say, body, respond }) => {
   await ack();
 
@@ -83,7 +99,7 @@ app.command("/weekly", async ({ command, ack, say }) => {
   await app.client.chat.scheduleMessage({
     channel: command.channel_id,
     // next monday at 9:30am CET
-    post_at: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (1 + 7 - new Date().getDay()) % 7 + 1000 * 60 * 60 * 9 + 1000 * 60 * 30).getTime() / 1000,
+    post_at: getNextMondayMorning().getTime(),
     text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
     blocks: weeklyMessage.blocks
   });
@@ -140,7 +156,7 @@ app.command("/weekly-status", async ({ command, ack, say }) => {
 
     await say("I'm still posting the message every monday at 9:30am CET :tada:\n" + scheduledDates);
   } else {
-    await say("I'm not posting the message anymore :cry:");
+    await say("I haven't scheduled any message :dotted_line_face:");
   }
 });
 
