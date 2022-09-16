@@ -38,7 +38,19 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
           text: `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`
         },
       },
-        action,
+      {
+        type: "actions",
+        elements: [{
+          type: "button",
+          text: {
+            type: "plain_text",
+            text: "Next week",
+            emoji: true
+          },
+          action_id: "weekly"
+        }
+        ]
+      }
       ],
       replace_original: true,
     });
