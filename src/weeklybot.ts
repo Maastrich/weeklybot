@@ -124,7 +124,20 @@ app.command("/weekly-status", async ({ command, ack, say }) => {
   });
 
   if (scheduled_messages?.length) {
-    await say("I'm still posting the message every monday at 9:30am CET :tada:");
+    const scheduledDates = scheduled_messages.map((message) => {
+      const date = new Date((message.post_at ?? 0) * 1000);
+      return date.toLocaleDateString("en-GB", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "numeric",
+        minute: "numeric",
+        timeZone: "Europe/Paris"
+      });
+    }).join("\n");
+
+    await say("I'm still posting the message every monday at 9:30am CET :tada:\n" + scheduledDates);
   } else {
     await say("I'm not posting the message anymore :cry:");
   }
