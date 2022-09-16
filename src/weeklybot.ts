@@ -12,7 +12,7 @@ const app = new App({
 function getNextMondayMorning(logger: Logger) {
   const now = DateTime.now();
   const weekOffset = (now.weekday === 1 && now.hour <= 9 && now.minute < 30) ? 0 : 1;
-  return now.setZone("Europe/Paris").plus({ weeks: weekOffset }).startOf("week").set({ hour: 30, minute: 0, second: 0, millisecond: 0 })
+  return now.setZone("Europe/Paris").plus({ weeks: weekOffset }).startOf("week").set({ hour: 9, minute: 30, second: 0, millisecond: 0 })
 }
 
 app.action("weekly", async ({ ack, say, body, respond }) => {
