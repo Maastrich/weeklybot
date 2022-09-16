@@ -65,14 +65,6 @@ app.command("/weekly", async ({ command, ack, say }) => {
   const weeklyMessage = {
     blocks: [
       {
-        type: "section",
-        text: {
-          type: "plain_text",
-          text: "Hello there :wave!\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
-          emoji: true
-        }
-      },
-      {
         type: "actions",
         elements: [
           {
@@ -92,6 +84,7 @@ app.command("/weekly", async ({ command, ack, say }) => {
     token: process.env.SLACK_BOT_TOKEN,
     channel: command.channel_id,
     post_at: new Date().setHours(9, 30, 0, 0),
+    text: "Hello there :wave:\nIt's monday, time to pick your scribe and ambassador for the week :tada:",
     blocks: weeklyMessage.blocks
   });
   await say("I'll post the message every monday at 9:30am CET :tada:");
