@@ -15,8 +15,9 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
   const channelId = body.channel?.id;
 
   if (!channelId) {
-    await say({
+    await respond({
       text: "Sorry, I couldn't find the channel ID for this message.",
+      replace_original: false,
     });
     return;
   }
@@ -29,8 +30,9 @@ app.action("weekly", async ({ action, ack, say, body, respond }) => {
     ?.sort(() => 0.5 - Math.random())
     .slice(0, 2);
   if (randomUsers) {
-    await say({
+    await respond({
       text: `Hello everyone! here are your scribe and ambassador. \nScribe: <@${randomUsers[0]}>\nAmbassador: <@${randomUsers[1]}>\nHave a great week!`,
+      replace_original: false,
     });
     // post a message to the channel
   } else {
